@@ -1,0 +1,13 @@
+*.iml
+.idea/
+.gradle/
+*.ipr
+*.iws
+/out/
+.idea_modules/
+*.class
+.mtj.tmp/
+*.jar
+*.war
+*.ear
+hs_err_pid*
