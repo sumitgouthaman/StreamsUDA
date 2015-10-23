@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by sumit on 10/14/15.
  */
-public class EsperUda implements UpdateListener {
+public class EsperUdaListener implements UpdateListener {
 
     private UdaObject udaObject;
     private Map<String, String> nameMappings;
@@ -23,11 +23,11 @@ public class EsperUda implements UpdateListener {
     private Class outputType;
     private Map<String, Field> inputFieldMap;
 
-    public EsperUda(UdaObject udaObject, EPRuntime epRuntime) {
+    public EsperUdaListener(UdaObject udaObject, EPRuntime epRuntime) {
         this(udaObject, epRuntime, null);
     }
 
-    public EsperUda(UdaObject udaObject, EPRuntime epRuntime, Map<String, String> nameMappings) {
+    public EsperUdaListener(UdaObject udaObject, EPRuntime epRuntime, Map<String, String> nameMappings) {
         this.udaObject = udaObject;
         this.udaObject.inflate();
         this.nameMappings = nameMappings != null ? nameMappings : new HashMap<String, String>();
