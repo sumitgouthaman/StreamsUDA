@@ -12,3 +12,5 @@ build/
 *.war
 *.ear
 hs_err_pid*
+.DS_Store
+
