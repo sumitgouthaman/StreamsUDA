@@ -168,6 +168,10 @@ public class UdaObject implements Serializable{
         ArrayList<T> returnValues = new ArrayList<>();
         for (UdaStatement udaStatement : statementsToExecute) {
             String valReplacedQuery = replaceQueryParamsWithVals(udaStatement.query, newEvent);
+
+            // Replace "ROWSMODIFIED" with number of rows modified in previous statement
+            valReplacedQuery = valReplacedQuery.replaceAll("ROWSMODIFIED", "" + lastQueryNumRows);
+
             switch (udaStatement.statementType) {
                 case STANDARD:
                     try {
