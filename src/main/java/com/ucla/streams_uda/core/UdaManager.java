@@ -2,7 +2,6 @@ package com.ucla.streams_uda.core;
 
 import com.ucla.streams_uda.state_storage.IStateStorageConnectionProvider;
 
-import java.sql.Connection;
 import java.util.HashMap;
 
 /**
@@ -10,8 +9,11 @@ import java.util.HashMap;
  */
 public class UdaManager {
 
-    private static UdaManager instance = null;        // singleton instance
+    // Singleton instance
+    private static UdaManager instance = null;
+    // Provides a SQL connection object for the state table
     private IStateStorageConnectionProvider stateStorageConnectionProvider = null;
+    // Map of UDA definitions
     private HashMap<String, UdaSpec> declaredUdas = new HashMap<>();
 
     protected UdaManager() {
@@ -34,7 +36,7 @@ public class UdaManager {
     /**
      * Set provider that will be used for storing state in the UDA
      *
-     * @param storageConnectionProvider Valid implementation of IStateStorageProvider
+     * @param storageConnectionProvider Valid implementation of IStateStorageConnectionProvider
      */
     public void setStateStorageConnection(IStateStorageConnectionProvider storageConnectionProvider) {
         this.stateStorageConnectionProvider = storageConnectionProvider;
