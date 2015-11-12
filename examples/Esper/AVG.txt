@@ -1,0 +1,18 @@
+AGGREGATE AVG (@val Float): Float {
+    TABLE state (tsum Float, cnt INTEGER);
+
+    INITIALIZE: {
+        INSERT INTO state VALUES
+        (@val, 1);
+    }
+
+    ITERATE: {
+        UPDATE state
+        SET tsum = tsum + @val, cnt = cnt + 1;
+        INSERT INTO return
+        SELECT tsum/cnt AS avg
+        FROM state;
+    }
+
+    TERMINATE: {}
+}
