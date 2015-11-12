@@ -113,6 +113,11 @@ public class UdaObject implements Serializable {
         while (sc.hasNextLine()) {
             String newLine = sc.nextLine().trim();
 
+            // Start of UDA (ignore line)
+            if (newLine.matches("(?i)aggregate .*") && parserState == ParserState.STATE_DECLARATION) {
+                continue;
+            }
+
             // Start of initialize block
             if (newLine.matches("(?i)initialize:\\s*\\{")) {
                 parserState = ParserState.INITIALIZE;
@@ -138,7 +143,7 @@ public class UdaObject implements Serializable {
                     incompleteQuery = incompleteQuery.trim();
                     UdaStatement udaStatement;
 
-                    if (incompleteQuery.matches("(?i)table") && parserState == parserState.STATE_DECLARATION) {
+                    if (incompleteQuery.matches("(?i)table .*") && parserState == parserState.STATE_DECLARATION) {
                         udaStatement = new UdaStatement(
                                 StatementType.STATE_DECLARATION,
                                 "CREATE " + incompleteQuery);
@@ -428,5 +433,24 @@ public class UdaObject implements Serializable {
         INITIALIZE,
         ITERATE,
         TERMINATE
+    }
+
+    public void printState() {
+        System.out.println("\nSTATE DECLARATION");
+        for (UdaStatement udaStatement : stateDeclarationStatements) {
+            System.out.println(udaStatement);
+        }
+        System.out.println("\nINITIALIZE SECTION");
+        for (UdaStatement udaStatement : initializeStatements) {
+            System.out.println(udaStatement);
+        }
+        System.out.println("\nITERATE SECTION");
+        for (UdaStatement udaStatement : iterateStatements) {
+            System.out.println(udaStatement);
+        }
+        System.out.println("\nTERMINATE SECTION");
+        for (UdaStatement udaStatement : terminateStatements) {
+            System.out.println(udaStatement);
+        }
     }
 }
