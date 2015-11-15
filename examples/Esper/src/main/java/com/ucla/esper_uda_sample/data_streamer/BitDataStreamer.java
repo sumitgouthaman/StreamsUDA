@@ -14,8 +14,8 @@ import java.util.LinkedList;
  * Frequency of 1s and 0s:
  * - For every sequence of 10000 bits
  * first 2500 bits are produced with the probability of a 0 as 75%
- * next 2500 bits are produced with the probability of a 0 as 50%
  * next 2500 bits are produced with the probability of a 0 as 25%
+ * next 2500 bits are produced with the probability of a 0 as 50%
  * next 2500 bits are produced with the probability of a 0 as 75%
  */
 public class BitDataStreamer implements Runnable {
