@@ -1,0 +1,92 @@
+AGGREGATE COUNTN (@bit Int): Int {
+	TABLE Bucket (size Int, time Int);
+
+	INITIALIZE: {
+		SET @N = 1000;
+		SET @TIME = 0;
+		INSERT INTO Bucket(size, time)
+		SELECT 1, @TIME
+		FROM DUAL
+		WHERE @bit = 1;
+		INSERT INTO return
+		SELECT COALESCE(SUM(size), 0) as count
+		FROM Bucket;
+	}
+
+	ITERATE: {
+		SET @TIME = MOD(@TIME + 1, @N);
+
+		DELETE FROM Bucket
+		WHERE time = @TIME;
+
+		INSERT INTO Bucket
+		SELECT (b1.size * 2),
+			CASE WHEN @TIME > MIN(b1.end)
+				THEN @TIME - MIN(b1.end)
+				ELSE @TIME + @N - MIN(b1.end)
+			END
+		FROM (
+			SELECT size, 
+				CASE WHEN @TIME > time
+					THEN @TIME - b2.time
+					ELSE @TIME + @N - b2.time
+				END AS 'end', 
+				time AS 'otime'
+			FROM Bucket b2
+		) b1
+		WHERE NOT EXISTS (
+			SELECT size, 
+				CASE WHEN @TIME > time
+					THEN @TIME - b2.time
+					ELSE @TIME + @N - b2.time
+				END AS 'end'
+			FROM Bucket b2
+			WHERE b2.size < b1.size
+			GROUP BY b2.size
+			HAVING COUNT(*) <=1
+		)
+		AND @bit = 1
+		GROUP BY b1.size
+		HAVING COUNT(*) > 1;
+
+		DELETE b FROM Bucket b
+		WHERE EXISTS (
+			SELECT *
+			FROM (
+				SELECT size, 
+					CASE WHEN @TIME > time
+						THEN @TIME - b1.time
+						ELSE @TIME + @N - b1.time
+					END AS 'end', 
+					time AS 'otime'
+				FROM Bucket b1
+			) b2
+			WHERE EXISTS (
+				SELECT * 
+				FROM (
+					SELECT size, 
+						CASE WHEN @TIME > time
+							THEN @TIME - b3.time
+							ELSE @TIME + @N - b3.time
+						END AS 'end', 
+						time AS 'otime'
+					FROM Bucket b3
+				) h2
+				WHERE h2.size > b2.size AND h2.end <= b2.end
+			)
+			AND b2.size = b.size AND b2.otime = b.time
+		)
+		AND @bit = 1;
+
+		INSERT INTO Bucket(size, time)
+		SELECT 1, @TIME
+		FROM DUAL
+		WHERE @bit = 1;
+
+		INSERT INTO return
+		SELECT COALESCE(SUM(size), 0) - (MAX(size)/2) AS count
+		FROM Bucket;
+	}
+
+	TERMINATE: {}
+}
