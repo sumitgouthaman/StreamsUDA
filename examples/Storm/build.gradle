@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://clojars.org/repo'
+    }
+}
+
+dependencies {
+    compile files('../../build/libs/StreamsUDA-1.0.jar')
+    compile 'mysql:mysql-connector-java:5.1.36'
+    compile 'org.apache.storm:storm-core:0.10.0-beta1'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}

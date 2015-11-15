@@ -1,0 +1,32 @@
+AGGREGATE FLAJOLET_MARTIN (@word VARCHAR): Int {
+	TABLE bitmap(onePos INT, lastSeenAt INT);
+
+	INITIALIZE: {
+		SET @WINDOW_SIZE =7000;
+		SET @N = 0;
+		INSERT INTO bitmap VALUES (-1, -1); -- See explanation below
+        INSERT INTO bitmap VALUES (@trailingZerosInHash, @N);
+	}
+
+	ITERATE: {
+		SET @N = MOD(@N + 1, @WINDOW_SIZE);
+		DELETE FROM bitmap WHERE lastSeenAt = @N;
+		UPDATE bitmap SET lastSeenAt = @N WHERE onePos = @trailingZerosInHash;
+       	INSERT INTO bitmap(onePos, lastSeenAt)
+       	SELECT @trailingZerosInHash, @N
+       	FROM DUAL
+        WHERE ROWSMODIFIED <> 1;
+
+        INSERT INTO RETURN
+       	SELECT POWER(2, BM.LzeroPos)/0.77351 as count
+        FROM (
+        	SELECT min(bm1.onePos) + 1 AS LzeroPos
+        	FROM bitmap bm1 LEFT OUTER JOIN bitmap bm2
+        		ON bm2.onePos = bm1.onePos + 1
+        	WHERE bm1.onePos >= -1
+        		AND bm2.onePos is null
+        ) AS BM;
+	}
+
+	TERMINATE: {}
+}
